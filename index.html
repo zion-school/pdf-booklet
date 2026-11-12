@@ -1,0 +1,230 @@
+<!doctype html>
+<!--
+  Copyright (c) 2026 Zion Nursery & Primary School, Kovaipudur
+  Copyright (c) 2026 Jabez Winston
+  SPDX-License-Identifier: MIT
+  Date: 26-Sep-2026
+-->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF Booklet</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <input type="file" id="file" class="visually-hidden" accept="application/pdf,.pdf" tabindex="-1" aria-hidden="true">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="wordmark">PDF Booklet</span>
+      <span class="local">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+        <span class="local-long">Runs on your computer. Nothing is uploaded.</span>
+        <span class="local-short">Nothing is uploaded</span>
+      </span>
+    </div>
+
+    <div class="file-chip" id="file-chip" hidden>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>
+      <span class="file-text">
+        <span class="file-name" id="file-name"></span>
+        <span class="file-pages mono" id="file-pages"></span>
+      </span>
+      <button type="button" class="chip-button" data-pick-file>Change</button>
+    </div>
+
+    <div class="actions">
+      <div class="bar-row" id="bar-row" hidden>
+        <p class="bar-summary" id="bar-summary"></p>
+        <a href="#workspace">See sheets</a>
+      </div>
+      <button type="button" class="primary" id="choose" data-pick-file>Choose PDF</button>
+      <button type="button" class="primary" id="download" hidden>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11"/><path d="M7 10l5 5 5-5"/><path d="M5 20h14"/></svg>
+        <span id="download-text">Download booklet</span>
+      </button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="controls" id="controls" aria-label="Booklet settings">
+
+      <fieldset class="folds">
+        <legend class="eyebrow">Fold</legend>
+        <label class="fold">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="2" y="9" width="40" height="27" rx="2"/><line x1="22" y1="9" x2="22" y2="36" stroke-dasharray="3 2.5"/></svg>
+          <span class="fold-text"><span class="fold-name">Fold 2</span><span class="fold-desc"><span class="fold-how">Fold once · </span><span data-size="fold2"></span></span></span>
+          <input type="radio" name="mode" value="fold2" checked>
+        </label>
+        <label class="fold">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="9" y="2" width="27" height="40" rx="2"/><line x1="22.5" y1="2" x2="22.5" y2="42" stroke-dasharray="3 2.5"/><line x1="9" y1="22" x2="36" y2="22" stroke-dasharray="3 2.5"/></svg>
+          <span class="fold-text"><span class="fold-name">Fold 4 · quarto</span><span class="fold-desc"><span class="fold-how">Fold twice, slit the top · </span><span data-size="quarto"></span></span></span>
+          <input type="radio" name="mode" value="quarto">
+        </label>
+        <label class="fold">
+          <svg viewBox="0 0 44 44" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><rect x="9" y="2" width="27" height="40" rx="2"/><line x1="22.5" y1="2" x2="22.5" y2="42" stroke-dasharray="3 2.5"/><line x1="5" y1="22" x2="40" y2="22" class="cut-stroke"/></svg>
+          <span class="fold-text"><span class="fold-name">Fold 4 · cut &amp; stack</span><span class="fold-desc"><span class="fold-how">Cut in half, fold once · </span><span data-size="cutstack"></span></span></span>
+          <input type="radio" name="mode" value="cutstack">
+        </label>
+      </fieldset>
+
+      <div class="group">
+        <span class="eyebrow" id="paper-label">Sheet size</span>
+        <div class="segmented six" role="group" aria-labelledby="paper-label" data-seg="paper">
+          <button type="button" data-value="auto" aria-pressed="true">Auto</button>
+          <button type="button" data-value="A3" aria-pressed="false">A3</button>
+          <button type="button" data-value="A4" aria-pressed="false">A4</button>
+          <button type="button" data-value="A5" aria-pressed="false">A5</button>
+          <button type="button" data-value="Letter" aria-pressed="false">Letter</button>
+          <button type="button" data-value="Legal" aria-pressed="false">Legal</button>
+        </div>
+        <div class="readouts">
+          <div class="readout" id="src-row" hidden><span>Your pages</span><span class="mono" id="src-size"></span></div>
+          <div class="readout"><span>Sheet</span><span class="mono" id="sheet-size"></span></div>
+          <div class="readout"><span>Booklet page</span><span class="mono" id="page-size"></span></div>
+        </div>
+        <span class="hint" id="paper-hint"></span>
+      </div>
+
+      <div class="group">
+        <span class="eyebrow" id="scale-label">Page scale</span>
+        <div class="segmented three" role="group" aria-labelledby="scale-label" data-seg="scale">
+          <button type="button" data-value="fit" aria-pressed="true">Fit</button>
+          <button type="button" data-value="actual" aria-pressed="false">100%</button>
+          <button type="button" data-value="custom" aria-pressed="false">Custom</button>
+        </div>
+        <label class="custom-scale" id="custom-scale" hidden>
+          <span>Scale</span>
+          <span class="unit-input"><input type="number" id="scale-pct" class="mono" min="10" max="400" step="1" value="100" inputmode="numeric"><span>%</span></span>
+        </label>
+        <span class="hint" id="scale-hint"></span>
+      </div>
+
+      <div class="group">
+        <span class="eyebrow" id="flip-label">Printer duplex</span>
+        <div class="segmented" role="group" aria-labelledby="flip-label" data-seg="flip">
+          <button type="button" data-value="long" aria-pressed="true">Flip on long edge</button>
+          <button type="button" data-value="short" aria-pressed="false">Flip on short edge</button>
+        </div>
+        <span class="hint">Pick what your print dialog calls it.</span>
+      </div>
+
+      <button type="button" class="more-toggle" id="more-toggle" aria-expanded="false" aria-controls="more-panel">
+        <span class="more-text"><span class="more-title">More options</span><span class="hint" id="more-summary"></span></span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+      </button>
+
+      <section class="more-panel" id="more-panel" hidden aria-labelledby="more-heading">
+        <div class="more-head">
+          <h2 id="more-heading">More options</h2>
+          <button type="button" class="secondary" id="more-done">Done</button>
+        </div>
+
+        <div class="field">
+          <label for="pages">Pages</label>
+          <input type="text" id="pages" class="mono" placeholder="All pages" spellcheck="false" autocomplete="off">
+          <span class="hint">Like <code>1-12, b, 13-</code> · <code>b</code> adds a blank page</span>
+        </div>
+
+        <div class="field">
+          <label for="signature">Sheets per signature</label>
+          <div class="stepper">
+            <button type="button" class="step" data-step="-1" aria-label="Fewer sheets per signature">−</button>
+            <input type="number" id="signature" class="mono" min="0" step="1" value="0" inputmode="numeric">
+            <button type="button" class="step" data-step="1" aria-label="More sheets per signature">+</button>
+          </div>
+          <span class="hint">0 keeps everything in one signature. Each signature is folded on its own.</span>
+        </div>
+
+        <hr>
+
+        <label class="switch-row">
+          <span class="switch-text"><span class="switch-title">Trim white margins</span><span class="hint">Like pdfbook2. Odd and even pages share one crop, so text stays in place.</span></span>
+          <input type="checkbox" role="switch" class="switch" id="crop">
+        </label>
+
+        <fieldset class="margins">
+          <legend>Margins <span class="hint">(mm, on each booklet page)</span></legend>
+          <label>Outer <span class="unit-input"><input type="number" id="m-outer" class="mono" min="0" step="0.5" value="0"><span>mm</span></span></label>
+          <label>Inner (spine) <span class="unit-input"><input type="number" id="m-inner" class="mono" min="0" step="0.5" value="0"><span>mm</span></span></label>
+          <label>Top <span class="unit-input"><input type="number" id="m-top" class="mono" min="0" step="0.5" value="0"><span>mm</span></span></label>
+          <label>Bottom <span class="unit-input"><input type="number" id="m-bottom" class="mono" min="0" step="0.5" value="0"><span>mm</span></span></label>
+        </fieldset>
+
+        <label class="switch-row">
+          <span class="switch-text"><span class="switch-title">Print fold and cut lines</span><span class="hint">Thin grey guides on every sheet.</span></span>
+          <input type="checkbox" role="switch" class="switch" id="guides">
+        </label>
+      </section>
+    </aside>
+
+    <main class="workspace" id="workspace">
+      <div class="headline">
+        <div class="headline-text">
+          <h1 id="headline">Choose a PDF to start</h1>
+          <p id="subline"></p>
+        </div>
+        <div class="tabs" role="tablist" aria-label="View">
+          <button type="button" role="tab" id="tab-sheets" aria-controls="panel-sheets" aria-selected="true">Sheets</button>
+          <button type="button" role="tab" id="tab-fold" aria-controls="panel-fold" aria-selected="false" tabindex="-1">How to fold</button>
+        </div>
+      </div>
+
+      <div class="status-row">
+        <progress id="progress" max="1" value="0" hidden></progress>
+        <p class="status" id="status" role="status" aria-live="polite"></p>
+      </div>
+
+      <section class="dropzone" id="dropzone">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M12 17v-6"/><path d="M9.5 13.5L12 11l2.5 2.5"/></svg>
+        <p><strong>Drop a PDF here</strong> or <button type="button" class="link-button" data-pick-file>choose one</button>.</p>
+      </section>
+
+      <section class="panel" id="panel-sheets" role="tabpanel" aria-labelledby="tab-sheets">
+        <div class="sheets" id="sheets"></div>
+        <div class="legend" id="legend"></div>
+      </section>
+
+      <section class="panel" id="panel-fold" role="tabpanel" aria-labelledby="tab-fold" hidden>
+        <div class="fold-view">
+          <div class="stage" id="stage" aria-hidden="true"></div>
+          <div class="anim-side">
+            <div class="anim-bar">
+              <div class="anim-buttons">
+                <button type="button" class="secondary icon" id="anim-prev" aria-label="Previous step">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>
+                </button>
+                <button type="button" class="primary anim-play" id="anim-play" aria-pressed="false">Play</button>
+                <button type="button" class="secondary icon" id="anim-next" aria-label="Next step">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg>
+                </button>
+              </div>
+              <div class="segmented speed" role="group" aria-label="Speed" id="anim-speed">
+                <button type="button" data-speed="slow" aria-pressed="true">Slow</button>
+                <button type="button" data-speed="normal" aria-pressed="false">Normal</button>
+              </div>
+            </div>
+            <div class="anim-caption" aria-live="polite">
+              <span class="eyebrow" id="anim-count"></span>
+              <h2 id="anim-title"></h2>
+              <p id="anim-detail"></p>
+            </div>
+            <p class="hint" id="anim-note" hidden></p>
+            <ol class="anim-steps" id="anim-steps" aria-label="All steps"></ol>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="vendor/pdf-lib.min.js"></script>
+  <script src="js/imposition.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/thumbs.js"></script>
+  <script src="js/crop.js"></script>
+  <script src="js/preview.js"></script>
+  <script src="js/fold-anim.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
